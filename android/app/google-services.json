@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "39991117603",
+    "project_id": "codemagix-ci-cd",
+    "storage_bucket": "codemagix-ci-cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39991117603:android:fc7f9d05290b7a6d17ee96",
+        "android_client_info": {
+          "package_name": "com.example.codemagix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLUW7cMD1vbMKh8_FEJ7mjdfo4RkEiZ2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
