@@ -10,7 +10,7 @@ workflows:
       groups:
         - firebase_credentials
       android_signing:
-        - keystore_reference
+        - codemagic_keystore
 
     triggering:
       events:
