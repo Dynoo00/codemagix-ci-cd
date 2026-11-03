@@ -1,4 +1,3 @@
-```kotlin
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -99,4 +98,3 @@ dependencies {
 
     // Add Firebase dependencies here.
 }
-```
