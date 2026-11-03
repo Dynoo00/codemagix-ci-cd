@@ -1,13 +1,27 @@
+```kotlin
+import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+
+    // The Flutter Gradle Plugin must be applied after Android and Kotlin plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
 
+// Load local keystore properties.
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
+
 android {
     namespace = "com.example.codemagix"
+
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,42 +30,62 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.codemagix"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
+
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
-     signingConfigs {
-          release {
-              if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
-                  storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
-                  storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
-                  keyAlias System.getenv()["CM_KEY_ALIAS"]
-                  keyPassword System.getenv()["CM_KEY_PASSWORD"]
-              } else {
-                  keyAlias keystoreProperties['keyAlias']
-                  keyPassword keystoreProperties['keyPassword']
-                  storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-                  storePassword keystoreProperties['storePassword']
-              }
-          }
+    signingConfigs {
+        create("release") {
+
+            val isCI = System.getenv("CI")?.toBoolean() == true
+
+            if (isCI) {
+                // Codemagic signing configuration.
+                storeFile = file(
+                    System.getenv("CM_KEYSTORE_PATH")
+                        ?: error("CM_KEYSTORE_PATH is missing")
+                )
+
+                storePassword = System.getenv("CM_KEYSTORE_PASSWORD")
+                    ?: error("CM_KEYSTORE_PASSWORD is missing")
+
+                keyAlias = System.getenv("CM_KEY_ALIAS")
+                    ?: error("CM_KEY_ALIAS is missing")
+
+                keyPassword = System.getenv("CM_KEY_PASSWORD")
+                    ?: error("CM_KEY_PASSWORD is missing")
+
+            } else {
+                // Local development signing configuration.
+                keyAlias = keystoreProperties["keyAlias"]?.toString()
+
+                keyPassword = keystoreProperties["keyPassword"]?.toString()
+
+                storeFile = keystoreProperties["storeFile"]
+                    ?.toString()
+                    ?.let { file(it) }
+
+                storePassword = keystoreProperties["storePassword"]?.toString()
+            }
+        }
+    }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
@@ -60,11 +94,9 @@ flutter {
 }
 
 dependencies {
-  // Import the Firebase BoM
-  implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+    // Import the Firebase BoM.
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
 
-
-  // TODO: Add the dependencies for Firebase products you want to use
-  // When using the BoM, don't specify versions in Firebase dependencies
-  // https://firebase.google.com/docs/android/setup#available-libraries
+    // Add Firebase dependencies here.
 }
+```
