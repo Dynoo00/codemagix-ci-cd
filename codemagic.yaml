@@ -47,3 +47,10 @@ workflows:
           groups:
             - android-testers
           artifact_type: apk
+      
+      email:
+        recipients:
+          - dhiraj.c@elyxdigital.com
+        notify:
+          success: true
+          failure: false
