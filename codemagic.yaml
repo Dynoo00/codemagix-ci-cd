@@ -51,6 +51,7 @@ workflows:
       email:
         recipients:
           - dhiraj.c@elyxdigital.com
+          - sakib.t@elyxdigital.com
         notify:
           success: true
           failure: false
